@@ -1,4 +1,4 @@
-const CACHE_NAME = 'average-score-cache-v8';
+const CACHE_NAME = 'average-score-cache-v10';
 const APP_FILES = ['./', './index.html', './styles.css', './app.js', './share.js', './manifest.json', './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png'];
 
 self.addEventListener('install', event => {
@@ -11,10 +11,16 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
+self.addEventListener('message', event => {
+  if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
+});
+
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET' || new URL(event.request.url).origin !== self.location.origin) return;
 
-  event.respondWith(fetch(event.request).then(response => {
+  const request = new Request(event.request, {cache: 'no-store'});
+
+  event.respondWith(fetch(request).then(response => {
     if (response.ok) {
       const copy = response.clone();
       caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
