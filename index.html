@@ -5,7 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#6750a4" />
   <meta name="description" content="Мой средний балл — планируйте успеваемость офлайн" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Средний балл" />
   <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
   <link rel="stylesheet" href="styles.css" />
   <title>Мой средний балл</title>
 </head>
@@ -13,7 +17,7 @@
   <div class="app-shell">
     <header class="topbar">
       <div class="brand"><div class="brand-mark">Σ</div><div><h1>Мой средний балл</h1><p>Учебный трекер</p></div></div>
-      <div class="top-actions"><button class="icon-button" id="themeToggle" title="Сменить тему" aria-label="Сменить тему">🌙</button><button class="icon-button" id="settingsBtn" title="Настройки" aria-label="Настройки">⚙️</button></div>
+      <div class="top-actions"><button class="icon-button install-button" id="installBtn" title="Установить приложение" aria-label="Установить приложение" hidden>⬇</button><button class="icon-button" id="themeToggle" title="Сменить тему" aria-label="Сменить тему">🌙</button><button class="icon-button" id="settingsBtn" title="Настройки и перенос данных" aria-label="Настройки и перенос данных">⚙️</button></div>
     </header>
 
     <main class="page">
@@ -45,7 +49,7 @@
         <div class="card chart-card"><div class="card-title"><div><h3>Кривая среднего балла</h3><p id="curveCaption">Динамика по оценкам за выбранный период</p></div><span class="legend"><i class="legend-dot current"></i>Средний балл</span></div><div class="chart-wrap" id="curveChart"></div></div>
         <div class="card chart-card"><div class="card-title"><div><h3>Средний балл по предметам</h3><p>Сравнение предметов за выбранный период</p></div></div><div class="chart-wrap" id="performanceChart"></div></div>
         <div class="card chart-card"><div class="card-title"><div><h3>Оценки по периодам</h3><p>Распределение оценок и среднее по каждому предмету</p></div></div><div class="period-table" id="periodTable"></div></div>
-        <div class="card chart-card"><div class="card-title"><div><h3>План достижения результата</h3><p>Сколько оценок нужно получить или исправить</p></div></div><div class="plan-list" id="planList"></div></div>
+        <div class="card chart-card"><div class="card-title"><div><h3>План достижения результата</h3><p>Оценки, необходимые для достижения цели по предмету</p></div></div><div class="plan-list" id="planList"></div></div>
       </section>
 
       <section id="subjectDetailView" class="view">
@@ -62,9 +66,9 @@
 
   <dialog id="subjectDialog"><form method="dialog" id="subjectForm"><div class="dialog-head"><div><h2 id="dialogTitle">Новый предмет</h2><p>Добавьте предмет в дневник</p></div><button type="button" class="close-button" data-close="subjectDialog" aria-label="Закрыть">×</button></div><label>Название предмета<input name="name" required maxlength="40" placeholder="Например, Математика" /></label><label>Желаемая оценка<input name="target" type="number" min="2" max="5" step="1" required value="5" /></label><div class="dialog-actions"><button type="button" class="secondary-button" data-close="subjectDialog">Отмена</button><button class="primary-button" value="default">Сохранить</button></div></form></dialog>
   <dialog id="gradeDialog"><form method="dialog" id="gradeForm"><div class="dialog-head"><div><h2>Новая оценка</h2><p id="gradeSubjectName">Добавьте результат в дневник</p></div><button type="button" class="close-button" data-close="gradeDialog" aria-label="Закрыть">×</button></div><div class="form-grid"><label>Оценка<select name="value" required><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option></select></label><label>Дата<input name="date" type="date" required /></label></div><div class="form-grid"><label>Класс<select name="classNumber" id="gradeClass" required></select></label><label>Период<select name="period" id="gradePeriod" required></select></label></div><label class="repair-option" id="repairOption"><input name="fixable" type="checkbox" /> Эту двойку можно исправить</label><label>Комментарий <span class="optional">необязательно</span><input name="note" maxlength="80" placeholder="Контрольная, ответ у доски…" /></label><div class="dialog-actions"><button type="button" class="secondary-button" data-close="gradeDialog">Отмена</button><button class="primary-button" value="default">Добавить оценку</button></div></form></dialog>
-  <dialog id="settingsDialog"><form method="dialog" id="settingsForm"><div class="dialog-head"><div><h2>Настройки дневника</h2><p>Настройте учебный год и расчёт</p></div><button type="button" class="close-button" data-close="settingsDialog" aria-label="Закрыть">×</button></div><label>Текущий класс<select name="classNumber" id="settingsClass"></select></label><label>Текущий период<select name="currentPeriod" id="settingsPeriod"></select></label><label>Система выставления оценок<select name="periodSystem"><option value="quarters">4 четверти</option><option value="threeSemesters">3 семестра</option><option value="twoSemesters">2 семестра</option></select></label><label>Желаемый средний балл<input name="goal" type="number" min="2" max="5" step="0.01" required /></label><label>Граница перехода между оценками<input name="threshold" type="number" min="0" max="0.99" step="0.01" required /><small>Например, 0,67: средний 3,67 уже считается оценкой 4.</small></label><fieldset><legend>Дни обучения</legend><div class="weekdays" id="weekdays"></div></fieldset><div class="dialog-actions"><button type="button" class="secondary-button" data-close="settingsDialog">Отмена</button><button class="primary-button" value="default">Сохранить</button></div></form></dialog>
+  <dialog id="settingsDialog"><form method="dialog" id="settingsForm"><div class="dialog-head"><div><h2>Настройки дневника</h2><p>Настройте учебный год и расчёт</p></div><button type="button" class="close-button" data-close="settingsDialog" aria-label="Закрыть">×</button></div><label>Текущий класс<select name="classNumber" id="settingsClass"></select></label><label>Текущий период<select name="currentPeriod" id="settingsPeriod"></select></label><label>Система выставления оценок<select name="periodSystem"><option value="quarters">4 четверти</option><option value="threeSemesters">3 семестра</option><option value="twoSemesters">2 семестра</option></select></label><label>Желаемый средний балл<input name="goal" type="number" min="2" max="5" step="0.01" required /></label><label>Граница перехода между оценками<input name="threshold" type="number" min="0" max="0.99" step="0.01" required /><small>Например, 0,67: средний 3,67 уже считается оценкой 4.</small></label><fieldset><legend>Дни обучения</legend><div class="weekdays" id="weekdays"></div></fieldset><fieldset class="data-transfer"><legend>Перенос данных между устройствами</legend><p>Экспортируйте дневник в файл, чтобы перенести предметы, оценки и настройки.</p><div class="transfer-actions"><button type="button" class="secondary-button" id="exportDataBtn">Экспортировать файл</button><button type="button" class="secondary-button" id="importDataBtn">Импортировать файл</button><input id="importDataFile" type="file" accept=".json,application/json" hidden /></div></fieldset><div class="dialog-actions"><button type="button" class="secondary-button" data-close="settingsDialog">Отмена</button><button class="primary-button" value="default">Сохранить</button></div></form></dialog>
   <div class="toast" id="toast"></div>
   <script src="app.js"></script>
-  <script>if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('service-worker.js'));</script>
+  <script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js'));</script>
 </body>
 </html>

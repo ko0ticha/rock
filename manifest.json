@@ -1,1 +1,20 @@
-{"name":"Мой средний балл","short_name":"Средний балл","start_url":".","display":"standalone","background_color":"#faf8ff","theme_color":"#6750a4","lang":"ru","icons":[]}
+{
+  "id": "./",
+  "name": "Мой средний балл",
+  "short_name": "Средний балл",
+  "description": "Учебный дневник и планирование оценок",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#faf8ff",
+  "theme_color": "#6750a4",
+  "lang": "ru",
+  "categories": ["education", "utilities"],
+  "icons": [
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
