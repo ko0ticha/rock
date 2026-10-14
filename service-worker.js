@@ -1,4 +1,4 @@
-const CACHE_NAME = 'average-score-cache-v5';
+const CACHE_NAME = 'average-score-cache-v6';
 const APP_FILES = ['./', './index.html', './styles.css', './app.js', './manifest.json', './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png'];
 
 self.addEventListener('install', event => {
@@ -12,9 +12,21 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
-  event.respondWith(caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
-    const copy = response.clone();
-    caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+  if (event.request.method !== 'GET' || new URL(event.request.url).origin !== self.location.origin) return;
+
+  event.respondWith(fetch(event.request).then(response => {
+    if (response.ok) {
+      const copy = response.clone();
+      caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+    }
     return response;
-  })));
+  }).catch(async () => {
+    const cached = await caches.match(event.request);
+    if (cached) return cached;
+    if (event.request.mode === 'navigate') {
+      const offlinePage = await caches.match('./index.html');
+      if (offlinePage) return offlinePage;
+    }
+    return Response.error();
+  }));
 });
