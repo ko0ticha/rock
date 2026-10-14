@@ -1,5 +1,5 @@
-const CACHE_NAME = 'average-score-cache-v7';
-const APP_FILES = ['./', './index.html', './styles.css', './app.js', './manifest.json', './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png'];
+const CACHE_NAME = 'average-score-cache-v8';
+const APP_FILES = ['./', './index.html', './styles.css', './app.js', './share.js', './manifest.json', './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png'];
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_FILES)));
